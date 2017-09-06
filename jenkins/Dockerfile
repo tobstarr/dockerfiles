@@ -1,5 +1,10 @@
-FROM jenkinsci/jenkins:2.21
+FROM fedora:26
 
-USER root
+RUN dnf update -y && dnf install -y docker docker-compose java-1.8.0-openjdk bzr ca-certificates curl dirmngr git git gnupg2 mercurial openssh-clients procps subversion wget golang
 
-ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
+ARG JENKINS_VERSION
+RUN mkdir -p /opt && curl -SsfL http://mirrors.jenkins.io/war/${JENKINS_VERSION}/jenkins.war> /opt/jenkins.war
+
+ENV JENKINS_HOME=/var/jenkins_home
+
+ENTRYPOINT ["java", "-jar", "/opt/jenkins.war"]
